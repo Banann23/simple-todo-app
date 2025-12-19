@@ -1,183 +1,182 @@
-#include <iostream> // wejscie/wyjscie
-#include <fstream>  // operacje na plikach
-#include <map>      // struktura map (kategoria -> lista zadan)
-#include <vector>   // lista zadan
+#include <iostream> // input/output
+#include <fstream>  // file operations
+#include <map>      // map structure (category -> list of tasks)
+#include <vector>   // list of tasks
 
 using namespace std;
 
-// Funkcja wyswietlajaca wszystkie zadania
+// Function to display all tasks
 void showTasks(const map<string, vector<string>> &todo)
 {
-    if (todo.empty()) // jesli nie ma zadnych zadan
+    if (todo.empty()) // no tasks
     {
-        cout << "Brak zadan \n";
+        cout << "No tasks\n";
         return;
     }
 
-    for (const auto &pair : todo) // iteracja po kategoriach
+    for (const auto &pair : todo) // iterate over categories
     {
-        const string &category = pair.first;       // nazwa kategorii
-        const vector<string> &tasks = pair.second; // lista zadan
+        const string &category = pair.first;
+        const vector<string> &tasks = pair.second;
 
         cout << "\n"
              << category << ":\n";
-        for (int i = 0; i < tasks.size(); i++) // wyswietlanie zadan
+        for (int i = 0; i < tasks.size(); i++) // display tasks
         {
             cout << "  " << i + 1 << ". " << tasks[i] << "\n";
         }
     }
 }
 
-// Funkcja wczytujaca liste zadan z pliku
+// Function to load tasks from file
 void loadFromFile(map<string, vector<string>> &todo, const string &filename)
 {
     ifstream file(filename);
 
-    if (!file) // jesli nie mozna otworzyc pliku
+    if (!file) // cannot open file
     {
-        cout << "Nie mozna otworzyc pliku do odczytu\n";
+        cout << "Cannot open file for reading\n";
         return;
     }
 
-    todo.clear(); // czyszczenie listy zadan
+    todo.clear(); // clear current tasks
     string line, currentCategory;
 
     while (getline(file, line))
     {
-        if (line.empty()) // pominiecie pustych linii
+        if (line.empty())
             continue;
 
-        if (line.front() == '[' && line.back() == ']') // nowa kategoria
+        if (line.front() == '[' && line.back() == ']') // new category
         {
             currentCategory = line.substr(1, line.size() - 2);
-            todo[currentCategory] = {}; // inicjalizacja pustej listy zadan
+            todo[currentCategory] = {};
         }
         else
         {
-            todo[currentCategory].push_back(line); // dodanie zadania do aktualnej kategorii
+            todo[currentCategory].push_back(line); // add task to category
         }
     }
 
     file.close();
-    cout << "Wczytano z pliku\n";
+    cout << "Loaded from file\n";
 }
 
-// Funkcja zapisujaca liste zadan do pliku
+// Function to save tasks to file
 void saveToFile(const map<string, vector<string>> &todo, const string &filename)
 {
     ofstream file(filename);
 
-    if (!file) // jesli nie mozna otworzyc pliku
+    if (!file) // cannot open file
     {
-        cout << "Nie mozna otworzyc pliku do zapisu\n";
+        cout << "Cannot open file for writing\n";
         return;
     }
 
-    for (const auto &pair : todo) // iteracja po kategoriach
+    for (const auto &pair : todo)
     {
-        file << "[" << pair.first << "]\n";  // zapis kategorii
-        for (const auto &task : pair.second) // zapis zadan
+        file << "[" << pair.first << "]\n";  // save category
+        for (const auto &task : pair.second) // save tasks
         {
             file << task << "\n";
         }
     }
 
     file.close();
-    cout << "Zapisano do pliku\n";
+    cout << "Saved to file\n";
 }
 
 int main()
 {
-    map<string, vector<string>> todo; // struktura przechowujaca zadania
-    int choice;                       // wybor z menu
+    map<string, vector<string>> todo; // tasks storage
+    int choice;                       // menu choice
 
     do
     {
-        // wyswietlanie menu
+        // display menu
         cout << "\n--- TO-DO APP ---\n";
-        cout << "1. Dodaj zadanie\n";
-        cout << "2. Pokaz zadania\n";
-        cout << "3. Usun zadanie\n";
-        cout << "4. Zapisz zadania do pliku\n";
-        cout << "5. Wczytaj zadania z pliku\n";
-        cout << "0. Wyjscie\n";
-        cout << "Wybor: ";
+        cout << "1. Add task\n";
+        cout << "2. Show tasks\n";
+        cout << "3. Remove task\n";
+        cout << "4. Save tasks to file\n";
+        cout << "5. Load tasks from file\n";
+        cout << "0. Exit\n";
+        cout << "Choice: ";
         cin >> choice;
-        cin.ignore(); // czyszczenie bufora wejscia
+        cin.ignore(); // clear input buffer
 
         switch (choice)
         {
-        case 1: // dodawanie zadania
+        case 1: // add task
         {
-            string category, task; // wczytanie kategorii i zadania
-            cout << "Kategoria: ";
+            string category, task;
+            cout << "Category: ";
             getline(cin, category);
-            cout << "Zadanie: ";
+            cout << "Task: ";
             getline(cin, task);
 
-            todo[category].push_back(task); // dodanie zadania do kategorii
-            cout << "Dodano zadanie\n";
+            todo[category].push_back(task);
+            cout << "Task added\n";
             break;
         }
 
-        case 2: // wyswietlanie zadan
+        case 2: // show tasks
             showTasks(todo);
             break;
 
-        case 3: // usuwanie zadania
+        case 3: // remove task
         {
             string category;
             int index;
 
-            cout << "Kategoria: ";
+            cout << "Category: ";
             getline(cin, category);
 
-            if (todo.count(category) == 0 || todo[category].empty()) // sprawdzenie czy kategoria istnieje
+            if (todo.count(category) == 0 || todo[category].empty())
             {
-                cout << "Brak takiej kategorii lub pusta\n";
+                cout << "No such category or empty\n";
                 break;
             }
 
-            // wyswietlanie zadan w kategorii
             for (int i = 0; i < todo[category].size(); i++)
             {
                 cout << i + 1 << ". " << todo[category][i] << "\n";
             }
 
-            cout << "Numer zadania do usuniecia: ";
+            cout << "Task number to remove: ";
             cin >> index;
 
-            if (index < 1 || index > todo[category].size()) // sprawdzenie poprawnosci numeru
+            if (index < 1 || index > todo[category].size())
             {
-                cout << "Zly numer zadania\n";
+                cout << "Invalid task number\n";
             }
             else
             {
                 todo[category].erase(todo[category].begin() + index - 1);
-                cout << "Usunieto zadanie\n";
+                cout << "Task removed\n";
             }
-            cin.ignore(); // czyszczenie bufora wejscia
+            cin.ignore(); // clear buffer
             break;
         }
 
-        case 4: // zapisywanie do pliku
+        case 4: // save to file
             saveToFile(todo, "todo.txt");
             break;
 
-        case 5: // wczytywanie z pliku
+        case 5: // load from file
             loadFromFile(todo, "todo.txt");
             break;
 
-        case 0: // wyjscie
-            cout << "Koniec programu.\n";
+        case 0: // exit
+            cout << "Exiting program.\n";
             break;
 
-        default: // niepoprawny wybor
-            cout << "Nieprawidlowy wybor\n";
+        default: // invalid choice
+            cout << "Invalid choice\n";
             break;
         }
 
-    } while (choice != 0); // koniec programu
+    } while (choice != 0);
 
     return 0;
 }
