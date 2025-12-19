@@ -2,6 +2,7 @@
 *.o
 *.obj
 *.out
+todo
 
 .DS_Store
 Thumbs.db
